@@ -85,12 +85,12 @@ def main():
         social_args = ["--generate"]
         if args.dry_run:
             social_args.append("--dry-run")
-        run_module("social_manager.py", social_args)
+        run_module("engine/social_manager.py", social_args)
         print("\n✅  Content calendar generated. Review content_calendar.csv")
         return
 
     if args.clutch:
-        run_module("social_manager.py", ["--clutch"])
+        run_module("engine/social_manager.py", ["--clutch"])
         print("\n✅  Clutch content generated. Review content/ folder")
         return
 
@@ -98,7 +98,7 @@ def main():
         social_args = ["--schedule"]
         if args.dry_run:
             social_args.append("--dry-run")
-        run_module("social_manager.py", social_args)
+        run_module("engine/social_manager.py", social_args)
         return
 
     if args.followup_only:
