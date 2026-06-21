@@ -1,0 +1,12 @@
+# Pyrefly type-checker configuration
+# Tells the IDE linter to use the project venv so all packages resolve.
+# See: https://pyrefly.org/en/stable/configuration/
+
+python-interpreter-path = "./venv/bin/python3"
+site-package-path = "./venv/lib/python3.9/site-packages"
+search-path = [".", "engine"]
+
+# Suppress false positives from Pyrefly's internal virtual in-memory analysis
+ignore = [
+  "__pyrefly_virtual__/**",
+]

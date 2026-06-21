@@ -1,0 +1,47 @@
+# === Virtual Environment ===
+venv/
+.venv/
+
+# === SECURITY: Credentials & Secrets ===
+.env
+*.env
+.env.*
+
+# === Python ===
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+ENV/
+pip-log.txt
+pip-delete-this-directory.txt
+.eggs/
+*.egg-info/
+dist/
+build/
+*.egg
+
+# === Logs & Output ===
+*.log
+pipeline_output.log
+logs/
+
+# === macOS ===
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# === IDE / Editor ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

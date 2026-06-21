@@ -1,0 +1,21 @@
+{
+  "pythonVersion": "3.9",
+  "pythonPlatform": "Darwin",
+  "venvPath": ".",
+  "venv": "venv",
+  "pythonInterpreterPath": "./venv/bin/python3",
+  "extraPaths": [
+    "./venv/lib/python3.9/site-packages"
+  ],
+  "typeCheckingMode": "basic",
+  "reportMissingImports": "none",
+  "reportMissingModuleSource": "none",
+  "reportOptionalMemberAccess": "none",
+  "reportGeneralTypeIssues": "none",
+  "reportAttributeAccessIssue": "none",
+  "exclude": [
+    "venv/**",
+    "**/__pycache__/**",
+    "__pyrefly_virtual__/**"
+  ]
+}
