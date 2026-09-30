@@ -1,173 +1,208 @@
-# NEXUS Sales Engine
-### India-Based Software Dev + AI Company · US Startup Outreach System
-> **Strategy**: Approach US startups & agencies for white-label resourcing at India pricing.
-> You deliver, they bill their clients at US rates. Everyone wins.
+# NEXUS Sales Automation
 
----
+> AI-assisted B2B sales automation for lead discovery, lead enrichment, personalized outreach, CRM synchronization, follow-ups, and social content workflows.
 
-## 🧠 System Architecture
+[![Python](https://img.shields.io/badge/python-3.9%2B-3776AB.svg)](requirements.txt)
+[![Flask](https://img.shields.io/badge/Flask-dashboard-000000.svg)](app.py)
+[![AI](https://img.shields.io/badge/AI-Anthropic-compatible-6B4EFF.svg)](engine/pipeline.py)
+[![CRM](https://img.shields.io/badge/CRM-HubSpot-FF7A59.svg)](engine/pipeline.py)
 
+NEXUS is a Python sales automation workspace for B2B prospecting and outreach. It combines lead discovery, enrichment, ICP scoring, AI-assisted email personalization, HubSpot synchronization, follow-up scheduling, and social publishing behind a single master runner and a local Flask dashboard.
+
+## Features
+
+| Capability | Purpose |
+| --- | --- |
+| Lead discovery | Collect prospects from supported public sources and startup ecosystems |
+| Lead enrichment | Normalize prospect fields and enrich contact information |
+| ICP scoring | Rank prospects against configurable ideal-customer criteria |
+| AI personalization | Generate prospect-specific outreach using an LLM provider |
+| CRM sync | Push qualified contacts and enrichment fields into HubSpot |
+| Email outreach | Send initial outreach through SMTP |
+| Follow-up automation | Manage scheduled follow-up touches |
+| Social automation | Generate and publish LinkedIn/Facebook content |
+| Dashboard | Inspect leads, KPIs, configuration, execution status, calendar data, and logs |
+| Dry-run mode | Preview automation without sending outreach or publishing posts |
+
+## Architecture
+
+```text
+                         ┌─────────────────────┐
+                         │      run.py         │
+                         │    Master Runner    │
+                         └──────────┬──────────┘
+                                    │
+          ┌─────────────────────────┼─────────────────────────┐
+          │                         │                         │
+          ▼                         ▼                         ▼
+ ┌─────────────────┐      ┌──────────────────┐      ┌──────────────────┐
+ │ Lead Discovery  │      │ Outreach Pipeline│      │ Social / Followup│
+ │ lead_scraper.py │      │    pipeline.py   │      │      engines      │
+ └────────┬────────┘      └─────────┬────────┘      └────────┬─────────┘
+          │                         │                        │
+          ▼                         ▼                        ▼
+   data/leads.csv          AI + HubSpot + SMTP      calendar / tracker
+          │                         │                        │
+          └─────────────────────────┼────────────────────────┘
+                                    ▼
+                         ┌─────────────────────┐
+                         │    Flask Dashboard  │
+                         │       app.py        │
+                         └─────────────────────┘
 ```
-┌──────────────────────────────────────────────────────────────┐
-│                    python3 run.py                             │
-└──────────────────────┬───────────────────────────────────────┘
-                       │
-         ┌─────────────┼─────────────┐
-         ▼             ▼             ▼
-  ┌─────────────┐ ┌──────────┐ ┌──────────────┐
-  │lead_scraper │ │pipeline  │ │social_manager│
-  │    .py      │ │  .py     │ │    .py       │
-  └──────┬──────┘ └────┬─────┘ └──────┬───────┘
-         │              │              │
-  HackerNews        Claude 3.5    LinkedIn API
-  ProductHunt       HubSpot CRM   Facebook API
-  YCombinator       Gmail SMTP    Clutch Content
-  Hunter.io email   Report CSV    Calendar CSV
-         │              │              │
-         └──────────────▼──────────────┘
-                    leads.csv
-               pipeline_report.csv
-               content_calendar.csv
+
+## Project structure
+
+```text
+.
+├── app.py
+├── run.py
+├── engine/
+│   ├── followup_engine.py
+│   ├── lead_scraper.py
+│   ├── pipeline.py
+│   └── social_manager.py
+├── templates/
+│   └── index.html
+├── data/
+│   └── leads.csv
+├── NEXUS_SYSTEM_GUIDE.md
+├── requirements.txt
+├── pyproject.toml
+└── README.md
 ```
 
----
+Runtime-generated files such as logs, calendars, trackers, and reports should remain local and are excluded from version control.
 
-## ⚡ Quick Start
+## Quick start
 
-### Step 1 — Fill in your .env (the ONLY manual step)
-
-Open [`.env`](.env) and replace `PLACEHOLDER_DO_NOT_RUN` values:
-
-| Key | Required | Where to Get |
-|-----|----------|-------------|
-| `ANTHROPIC_API_KEY` | ✅ Core | [console.anthropic.com](https://console.anthropic.com) → API Keys |
-| `HUBSPOT_ACCESS_TOKEN` | ✅ Core | HubSpot → Settings → Private Apps → Create App |
-| `SENDER_EMAIL` | ✅ Core | Your Gmail address |
-| `EMAIL_APP_PASSWORD` | ✅ Core | [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords) |
-| `HUNTER_API_KEY` | ⭐ Recommended | [hunter.io/api-keys](https://hunter.io/api-keys) (free 25/mo) |
-| `PRODUCTHUNT_CLIENT_ID` | Optional | [producthunt.com/v2/oauth/applications](https://www.producthunt.com/v2/oauth/applications) |
-| `PRODUCTHUNT_CLIENT_SECRET` | Optional | Same as above |
-| `LINKEDIN_ACCESS_TOKEN` | Optional | LinkedIn Developer App → OAuth token |
-| `LINKEDIN_ORGANIZATION_ID` | Optional | Your LinkedIn Company Page ID (from URL) |
-| `FACEBOOK_PAGE_ACCESS_TOKEN` | Optional | [graph.facebook.com/me/accounts](https://graph.facebook.com/me/accounts) |
-| `FACEBOOK_PAGE_ID` | Optional | Your Facebook Business Page ID |
-| `COMPANY_NAME` | ✅ Core | Your company name |
-| `SENDER_NAME` | ✅ Core | Your name |
-| `CALENDLY_LINK` | ✅ Core | Your Calendly booking link |
-
-> ⚠️ **Gmail**: Enable 2FA → Generate App Password → Use that as EMAIL_APP_PASSWORD (NOT your real password)
-
----
-
-### Step 2 — One-Time HubSpot Setup
-
-In HubSpot: **Settings → Properties → Contact Properties → Create Property**
-- Label: `AI Personalized Pitch`
-- Internal name: `ai_personalized_pitch`  
-- Field type: Multi-line text
-
----
-
-### Step 3 — Run Everything
+### 1. Create a virtual environment
 
 ```bash
-# Full pipeline: scrape → enrich → initial email → social post → follow-up drips
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+### 2. Configure environment variables
+
+Create a local `.env` from the example template:
+
+```bash
+cp .env.example .env
+```
+
+Never commit real API keys, passwords, access tokens, or SMTP credentials.
+
+### 3. Validate configuration
+
+Run a safe preview before any external action:
+
+```bash
+python3 run.py --dry-run
+```
+
+### 4. Start the dashboard
+
+```bash
+python3 app.py
+```
+
+Open the local Flask dashboard in your browser.
+
+## Automation commands
+
+```bash
+# Full workflow
 python3 run.py
 
-# Or run individual steps:
-python3 run.py --scrape-only      # Just find new US startup leads
-python3 run.py --pipeline-only    # Just run email outreach (uses existing leads.csv)
-python3 run.py --social-only      # Just publish today's social posts
-python3 run.py --followup-only    # Just run pending follow-up email drips (Day 3/7/10/14)
-python3 run.py --dry-run          # Preview everything without sending
-```
+# Individual stages
+python3 run.py --scrape-only
+python3 run.py --pipeline-only
+python3 run.py --social-only
+python3 run.py --followup-only
 
-### Step 4 — One-Time Social Setup
-
-```bash
-# Generate 30-day content calendar (run once, review, then auto-post daily)
+# Social setup
 python3 run.py --generate
-
-# Generate your Clutch.co profile content + review request templates
 python3 run.py --clutch
-
-# Start daily auto-publisher (runs at scheduled times each day)
 python3 run.py --schedule
+
+# Safe preview
+python3 run.py --dry-run
 ```
 
----
+Before using commands that send email, update CRM records, or publish social content, verify credentials, recipients, rate limits, and campaign content.
 
-## 📁 File Map
+## Environment configuration
 
-```
-Sales Automation/
-├── .env                         ← 🔐 Your credentials (NEVER commit)
-├── .gitignore                   ← Keeps .env safe from git
-│
-├── run.py                       ← 🚀 Master runner (start here)
-├── lead_scraper.py              ← 🔭 US startup discovery engine
-├── pipeline.py                  ← 📧 AI enrichment + CRM + email
-├── social_manager.py            ← 📱 LinkedIn + Facebook + Clutch
-├── followup_engine.py           ← 🔁 B2B 5-touch drip follow-up engine
-│
-├── leads.csv                    ← Auto-generated by scraper
-├── content_calendar.csv         ← Auto-generated by --generate
-├── pipeline_report.csv          ← Auto-generated after each run
-├── followup_tracker.csv         ← Auto-generated tracking database for drips
-├── pipeline.log                 ← Detailed email pipeline log
-├── scraper.log                  ← Detailed scraper log
-├── social.log                   ← Detailed social posting log
-├── followup.log                 ← Detailed follow-up campaign log
-│
-└── content/
-    ├── clutch_profile.txt       ← Clutch company description
-    └── clutch_review_requests.txt ← Review email templates
-```
+The system uses environment variables for integration settings. The exact variables are documented in [.env.example](.env.example).
 
----
+Typical integrations include:
 
-## 🎯 Who We Target (ICP)
+- Anthropic API for AI-assisted generation
+- HubSpot API for CRM synchronization
+- SMTP/Gmail for email delivery
+- Hunter.io for email enrichment
+- LinkedIn and Facebook APIs for social publishing
+- Product Hunt and startup/public-source discovery
 
-| Company Type | Why We Target | What We Offer |
-|-------------|---------------|---------------|
-| **US Product Startups** (seed–Series A, 1–50 ppl) | They're building fast, eng team is small, burn rate is high | We are their offshore dev team at 10x lower cost |
-| **US Digital Agencies** (11–100 ppl) | They win clients but outsource dev work | We are their invisible dev partner — they brand our work |
-| **US Service Companies** (software studios, SaaS shops) | Capacity overflow, new project types | We extend their team on-demand |
+## Security model
 
-**Value Proposition (use in cold emails + social):**
-> "We work from India at Indian market rates. You charge your clients at US market rates. 
-> The arbitrage is your margin. We're your engineering team — you just manage the client."
+This repository is intended to keep credentials out of source control and avoid exposing them through the dashboard.
 
----
+Security controls include:
 
-## 📊 Lead Sources
+- `.env` exclusion through `.gitignore`
+- masked sensitive configuration values in the dashboard
+- dry-run support for operational testing
+- explicit integration configuration
+- exception handling around external API calls
 
-| Source | Type | Auth Required | Volume |
-|--------|------|--------------|--------|
-| HackerNews "Who Is Hiring" | Active hiring companies | None (free) | 50–100/month |
-| ProductHunt | New product launches | Free token | 30–50/month |
-| Y Combinator Directory | Latest batch startups | None (public) | 20–40/month |
-| Hunter.io Email Finder | Email enrichment | Free 25/month | 25 emails/month |
+Treat generated prospect and outreach data as business data. Apply appropriate access controls, retention practices, consent requirements, and provider terms before production use.
 
----
+## Operational safeguards
 
-## 📱 Social Media Strategy
+Sales automation can create external side effects. A production deployment should additionally establish:
 
-| Platform | Frequency | Content Focus |
-|----------|-----------|---------------|
-| **LinkedIn** | 5x/week (Mon–Fri 9:30am) | Thought leadership, cost arbitrage education, case studies |
-| **Facebook** | 3x/week (Mon/Wed/Fri 11am) | Behind-the-scenes, client wins, team culture |
-| **Clutch** | Ongoing | Profile optimization + review requests after deliveries |
+- sending limits and rate limits
+- suppression / unsubscribe handling
+- duplicate-lead protection
+- campaign approval before publishing
+- audit trails for externally visible actions
+- retry and idempotency controls
+- secrets management outside developer workstations
+- monitoring and alerting
+- backup and recovery procedures
 
----
+## Responsible AI usage
 
-## 🛡️ Security
+AI-generated outreach should be reviewed before production use. The model should assist with personalization rather than inventing customer facts, guarantees, testimonials, or claims.
 
-- All keys in `.env` — never in code
-- `.gitignore` blocks `.env` permanently  
-- Pipeline hard-stops if any key = PLACEHOLDER
-- All API calls wrapped in try/except with 3x retry + backoff
+For AI-assisted sales workflows:
+
+1. Ground personalization in verified lead data.
+2. Do not fabricate company details or customer relationships.
+3. Review generated content before sending.
+4. Keep sensitive data out of prompts unless explicitly required and appropriately protected.
+5. Maintain provider-specific policies and limits.
+6. Record important failures and corrections.
+
+## Documentation
+
+- [NEXUS System Guide](NEXUS_SYSTEM_GUIDE.md) — detailed workflow and architecture notes
+- [Environment template](.env.example) — required configuration shape
+- [Security Policy](SECURITY.md) — security reporting and handling
+- [Contributing Guide](CONTRIBUTING.md) — development workflow
+
+## Search topics
+
+**sales automation, B2B sales automation, AI sales automation, lead generation, lead scraping, lead enrichment, sales outreach, cold email automation, AI email personalization, CRM automation, HubSpot integration, follow-up automation, social media automation, Python sales tools, Flask sales dashboard, startup lead generation, AI-assisted sales, sales pipeline automation.**
+
+## License
+
+See [LICENSE](LICENSE) for the applicable licensing terms.
 
 ---
 
-*Built with Claude 3.5 Sonnet · HubSpot CRM · Gmail SMTP · LinkedIn API · Facebook Graph API · HackerNews API · ProductHunt API · Hunter.io*
+NEXUS Sales Automation is maintained by Acadify Solution as an evolving automation project. Evaluate integrations, compliance requirements, deliverability, and provider policies before production deployment.
