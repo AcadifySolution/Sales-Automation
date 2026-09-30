@@ -1,0 +1,42 @@
+name: Quality Checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Python Quality
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Compile Python modules
+        run: python -m compileall -q app.py run.py engine
+
+      - name: Import smoke test
+        run: python -c "import app; import engine.pipeline; import engine.lead_scraper; import engine.followup_engine; import engine.social_manager"
+
+      - name: Check required configuration files
+        run: python -c "from pathlib import Path; assert Path('.env.example').exists(); assert Path('README.md').exists(); assert Path('SECURITY.md').exists(); assert Path('CONTRIBUTING.md').exists()"
