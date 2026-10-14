@@ -38,5 +38,8 @@ jobs:
       - name: Import smoke test
         run: python -c "import app; import engine.pipeline; import engine.lead_scraper; import engine.followup_engine; import engine.social_manager"
 
+      - name: Import regression tests
+        run: python -m unittest discover -s tests -v
+
       - name: Check required configuration files
         run: python -c "from pathlib import Path; assert Path('.env.example').exists(); assert Path('README.md').exists(); assert Path('SECURITY.md').exists(); assert Path('CONTRIBUTING.md').exists()"
