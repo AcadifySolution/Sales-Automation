@@ -29,10 +29,10 @@ from pathlib import Path
 from typing import Optional, List, Dict, Tuple, Any
 
 # Ensure we can import from pipeline.py
-try:
+if __package__:
+    from .pipeline import load_and_validate_env, detect_smtp_provider, is_valid_email
+else:
     from pipeline import load_and_validate_env, detect_smtp_provider, is_valid_email
-except ImportError:
-    sys.exit("❌  Could not import from pipeline.py. Make sure pipeline.py is in the same directory.")
 
 # ════════════════════════════════════════════════════════════════════════════════
 #  LOGGING SETUP
