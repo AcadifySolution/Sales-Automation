@@ -1,4 +1,4 @@
-# NEXUS Sales Automation
+# NEXUS — Python Sales Automation and HubSpot Workflows
 
 > AI-assisted B2B sales automation for lead discovery, lead enrichment, personalized outreach, CRM synchronization, follow-ups, and social content workflows.
 
@@ -9,20 +9,28 @@
 
 NEXUS is a Python sales automation workspace for B2B prospecting and outreach. It combines lead discovery, enrichment, ICP scoring, AI-assisted email personalization, HubSpot synchronization, follow-up scheduling, and social publishing behind a single master runner and a local Flask dashboard.
 
+## Choose a starting point
+
+Explore the [Flask dashboard](app.py), [lead and follow-up workflows](engine/),
+and [configuration example](.env.example). Start locally with sample data and
+review each integration before enabling email delivery or CRM updates.
+
+For shared development practices, use the [Engineering Standards handbook](https://github.com/AcadifySolution/engineering-standards).
+
 ## Features
 
-| Capability | Purpose |
-| --- | --- |
-| Lead discovery | Collect prospects from supported public sources and startup ecosystems |
-| Lead enrichment | Normalize prospect fields and enrich contact information |
-| ICP scoring | Rank prospects against configurable ideal-customer criteria |
-| AI personalization | Generate prospect-specific outreach using an LLM provider |
-| CRM sync | Push qualified contacts and enrichment fields into HubSpot |
-| Email outreach | Send initial outreach through SMTP |
-| Follow-up automation | Manage scheduled follow-up touches |
-| Social automation | Generate and publish LinkedIn/Facebook content |
-| Dashboard | Inspect leads, KPIs, configuration, execution status, calendar data, and logs |
-| Dry-run mode | Preview automation without sending outreach or publishing posts |
+| Capability           | Purpose                                                                       |
+| -------------------- | ----------------------------------------------------------------------------- |
+| Lead discovery       | Collect prospects from supported public sources and startup ecosystems        |
+| Lead enrichment      | Normalize prospect fields and enrich contact information                      |
+| ICP scoring          | Rank prospects against configurable ideal-customer criteria                   |
+| AI personalization   | Generate prospect-specific outreach using an LLM provider                     |
+| CRM sync             | Push qualified contacts and enrichment fields into HubSpot                    |
+| Email outreach       | Send initial outreach through SMTP                                            |
+| Follow-up automation | Manage scheduled follow-up touches                                            |
+| Social automation    | Generate and publish LinkedIn/Facebook content                                |
+| Dashboard            | Inspect leads, KPIs, configuration, execution status, calendar data, and logs |
+| Dry-run mode         | Preview automation without sending outreach or publishing posts               |
 
 ## Architecture
 
@@ -128,9 +136,11 @@ python3 run.py --generate
 python3 run.py --clutch
 python3 run.py --schedule
 
-# Safe preview
-python3 run.py --dry-run
+# Preview social workflow only
+python3 run.py --social-only --dry-run
 ```
+
+`--dry-run` applies to the social workflow; it is not a global guarantee that other stages avoid external writes.
 
 Before using commands that send email, update CRM records, or publish social content, verify credentials, recipients, rate limits, and campaign content.
 
@@ -195,13 +205,9 @@ For AI-assisted sales workflows:
 - [Security Policy](SECURITY.md) — security reporting and handling
 - [Contributing Guide](CONTRIBUTING.md) — development workflow
 
-## Search topics
-
-**sales automation, B2B sales automation, AI sales automation, lead generation, lead scraping, lead enrichment, sales outreach, cold email automation, AI email personalization, CRM automation, HubSpot integration, follow-up automation, social media automation, Python sales tools, Flask sales dashboard, startup lead generation, AI-assisted sales, sales pipeline automation.**
-
 ## License
 
-See [LICENSE](LICENSE) for the applicable licensing terms.
+See repository licensing terms (no standalone LICENSE file is included) for the applicable licensing terms.
 
 ---
 
